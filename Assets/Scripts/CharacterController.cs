@@ -11,11 +11,18 @@ public class CharacterController : MonoBehaviour
     [SerializeField]
     SpeechRecognition speechRecognition;
     [SerializeField]
-    InputActionReference buttonAPress;
+    MeshRenderer bodyMeshRenderer;
     [SerializeField]
-    InputActionReference buttonARelease;
+    MeshRenderer eyeMeshRenderer;
+    [SerializeField]
+    MeshRenderer lightMeshRenderer;
+    [SerializeField]
+    Material[] bodyMaterials;
+    [SerializeField]
+    Material[] eyeMaterials;
+    [SerializeField]
+    Material[] lightMaterials;
 
-    private double timer = 0;
     private bool isActive = false;
     
     // Start is called before the first frame update
@@ -27,37 +34,37 @@ public class CharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (timer > 0) timer -= Time.deltaTime;
-
-        if (isActive)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                speechRecognition.StartRecording();
-            }
-
-            if (Input.GetKeyUp(KeyCode.Space))
-            {
-                speechRecognition.StopRecording();
-            }
-
-            if (buttonAPress.action.WasPerformedThisFrame())
-            {
-                speechRecognition.StartRecording();
-            }
-
-            if (buttonARelease.action.WasPerformedThisFrame())
-            {
-                speechRecognition.StopRecording();
-            }
-        }
+        
     }
 
-    public void Notify(string type, string text)
+    public void Notify(string type, string text="")
     {
         if (type == "movement")
         {
             movement(text);
+        }
+        else if (type == "start record")
+        {
+            if (isActive) speechRecognition.StartRecording();
+        }
+        else if (type == "stop record")
+        {
+            if (isActive)
+            {
+                speechRecognition.StopRecording();
+            }
+        }
+        else if (type == "state")
+        {
+            changeState(text);
+        }
+        else if (type == "reset") {
+            movement("reset");
+            isActive = false;
+        }
+        else
+        {
+            Debug.LogWarning("Unknow type!!!");
         }
     }
 
@@ -66,16 +73,47 @@ public class CharacterController : MonoBehaviour
         if (text == "up")
         {
             animator.SetTrigger("Up");
-            timer = 30;
             isActive = true;
-        } else if (text == "down")
+        }
+        else if (text == "down")
         {
             animator.SetTrigger("Down");
-            timer = 0;
             isActive = false;
-        } else
+        }
+        else if (text == "reset")
+        {
+            animator.SetTrigger("Reset");
+            isActive = false;
+        }
+        else
         {
             Debug.Log("Unknow movement!!!");
+        }
+    }
+
+    private void changeState(string state)
+    {
+        if (state == "idle")
+        {
+            bodyMeshRenderer.material = bodyMaterials[0];
+            eyeMeshRenderer.material = eyeMaterials[0];
+            lightMeshRenderer.material = lightMaterials[0];
+        }
+        else if (state == "think")
+        {
+            bodyMeshRenderer.material = bodyMaterials[1];
+            eyeMeshRenderer.material = eyeMaterials[1];
+            lightMeshRenderer.material = lightMaterials[1];
+        }
+        else if (state == "speak")
+        {
+            bodyMeshRenderer.material = bodyMaterials[2];
+            eyeMeshRenderer.material = eyeMaterials[2];
+            lightMeshRenderer.material = lightMaterials[2];
+        }
+        else
+        {
+            Debug.LogWarning("Unknow state!!!");
         }
     }
 }

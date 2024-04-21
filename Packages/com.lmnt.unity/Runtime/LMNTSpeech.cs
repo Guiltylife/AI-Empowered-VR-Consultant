@@ -4,59 +4,81 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace LMNT {
+namespace LMNT
+{
 
-public class LMNTSpeech : MonoBehaviour {
-  private AudioSource _audioSource;
-  private string _apiKey;
-  private List<Voice> _voiceList;
-  private DownloadHandlerAudioClip _handler;
+  public class LMNTSpeech : MonoBehaviour
+  {
+    private AudioSource _audioSource;
+    private string _apiKey;
+    private List<Voice> _voiceList;
+    private DownloadHandlerAudioClip _handler;
 
-  public string voice;
-  public string dialogue;
+    public string voice;
+    public string dialogue;
 
-  void Awake() {
-	  _audioSource = gameObject.GetComponent<AudioSource>();
-	  if (_audioSource == null) {
-		  _audioSource = gameObject.AddComponent<AudioSource>();
-	  }
-	  _apiKey = LMNTLoader.LoadApiKey();
-    _voiceList = LMNTLoader.LoadVoices();
-  }
-
-  public IEnumerator Prefetch() {
-    if (_handler != null) {
-      yield break;
+    void Awake()
+    {
+      _audioSource = gameObject.GetComponent<AudioSource>();
+      if (_audioSource == null)
+      {
+        _audioSource = gameObject.AddComponent<AudioSource>();
+      }
+      _apiKey = LMNTLoader.LoadApiKey();
+      _voiceList = LMNTLoader.LoadVoices();
     }
 
-    WWWForm form = new WWWForm();
-    form.AddField("voice", LookupByName(voice));
-    form.AddField("text", dialogue);
-    using (UnityWebRequest request = UnityWebRequest.Post(Constants.LMNT_SYNTHESIZE_URL, form)) {
-      _handler = new DownloadHandlerAudioClip(Constants.LMNT_SYNTHESIZE_URL, AudioType.WAV);
-      request.SetRequestHeader("X-API-Key", _apiKey);
-      // TODO: do not hard-code; find a clean way to get package version at runtime
-      request.SetRequestHeader("X-Client", "unity/0.1.0");
-      request.downloadHandler = _handler;
-      yield return request.SendWebRequest();
+    public IEnumerator Prefetch()
+    {
+      if (_handler != null)
+      {
+        yield break;
+      }
 
-      _audioSource.clip = _handler.audioClip;
+      WWWForm form = new WWWForm();
+      form.AddField("voice", LookupByName(voice));
+      form.AddField("text", dialogue);
+      while (true)
+      {
+        using (UnityWebRequest request = UnityWebRequest.Post(Constants.LMNT_SYNTHESIZE_URL, form))
+        {
+          _handler = new DownloadHandlerAudioClip(Constants.LMNT_SYNTHESIZE_URL, AudioType.WAV);
+          request.SetRequestHeader("X-API-Key", _apiKey);
+          // TODO: do not hard-code; find a clean way to get package version at runtime
+          request.SetRequestHeader("X-Client", "unity/0.1.0");
+          request.downloadHandler = _handler;
+          yield return request.SendWebRequest();
+
+          try
+          {
+            _audioSource.clip = _handler.audioClip;
+            break;
+          }
+          catch
+          {
+            Debug.LogError("Failed to load audio clip");
+          }
+        }
+      }
+    }
+
+    public IEnumerator Talk()
+    {
+      if (_handler == null)
+      {
+        StartCoroutine(Prefetch());
+      }
+      if (_audioSource.clip == null)
+      {
+        yield return new WaitUntil(() => _audioSource.clip != null);
+      }
+      _audioSource.Play();
+    }
+
+    private string LookupByName(string name)
+    {
+      return _voiceList.Find(v => v.name == name).id;
     }
   }
-
-  public IEnumerator Talk() {
-    if (_handler == null) {
-      StartCoroutine(Prefetch());
-    }
-    if (_audioSource.clip == null) {
-      yield return new WaitUntil(() => _audioSource.clip != null);
-    }
-    _audioSource.Play();
-  }
-
-  private string LookupByName(string name) {
-    return _voiceList.Find(v => v.name == name).id;
-  }
-}
 
 }

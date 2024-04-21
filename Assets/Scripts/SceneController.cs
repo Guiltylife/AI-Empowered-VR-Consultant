@@ -29,12 +29,24 @@ public class SceneController : MonoBehaviour
         
     }
 
-    public void Notify(string type, string text)
+    public void Notify(string type, string text="")
     {
-        if (type == "sky" && !skyIsSet)
+        if (type == "sky")
         {
-            changeSky(text);
-            skyIsSet = true;
+            if (!skyIsSet)
+            {
+                changeSky(text);
+                skyIsSet = true;
+            }
+        }
+        else if (type == "reset")
+        {
+            skyIsSet = false;
+            changeSky("morning");
+        }
+        else
+        {
+            Debug.LogWarning("Unknow type!!!");
         }
     }
 
@@ -50,14 +62,14 @@ public class SceneController : MonoBehaviour
             RenderSettings.skybox = skybox_dusk;
             waterDaytime.SetActive(true);
             waterNightime.SetActive(false);
-        } else if (time == "night")
+        } else if (time == "evening")
         {
             RenderSettings.skybox = skybox_night;
             waterDaytime.SetActive(false);
             waterNightime.SetActive(true);
         } else
         {
-            Debug.Log("Unknow time!!!");
+            Debug.LogWarning("Unknow time!!!");
         }
     }
 }

@@ -278,6 +278,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Start Game",
+                    "type": "Button",
+                    "id": "473ab586-a757-487d-a859-c29e22e6f677",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pause Game",
+                    "type": "Button",
+                    "id": "64b30506-aa4c-4bea-9a2c-3df6ab80d951",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -456,6 +474,28 @@
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "2ef69af4-7dd9-40a0-ae57-64de983e5258",
+                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start Game",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "24a0c9e4-7e29-4be0-b6ec-403dcc68b343",
+                    "path": "<OculusTouchController>{LeftHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause Game",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -798,18 +838,18 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "PressA",
+                    "name": "Record Start",
                     "type": "Button",
-                    "id": "b3ddaaa5-1127-4f0e-b70c-4b6258d237f4",
+                    "id": "1fbfc3d8-d4b7-494c-b23a-544364c8e511",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ReleaseA",
+                    "name": "Record End",
                     "type": "Button",
-                    "id": "f1b77833-35f4-464a-be8b-e46b67da9927",
+                    "id": "ed1d21f8-29af-4a9c-986c-6ad12b0603fd",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -995,23 +1035,23 @@
                 },
                 {
                     "name": "",
-                    "id": "c3e4d63e-154b-463b-b8ff-d96fbec6d1bb",
+                    "id": "681d4d69-2eba-4ca9-8705-1a9d616ad0c7",
                     "path": "<OculusTouchController>{RightHand}/primaryButton",
                     "interactions": "Press",
                     "processors": "",
                     "groups": "",
-                    "action": "PressA",
+                    "action": "Record Start",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "8821dc19-03f1-48ed-b1bc-934d1fc45f0e",
+                    "id": "6d6b91cf-cd78-40b1-a2a9-c57521af7a31",
                     "path": "<OculusTouchController>{RightHand}/primaryButton",
                     "interactions": "Press(behavior=1)",
                     "processors": "",
                     "groups": "",
-                    "action": "ReleaseA",
+                    "action": "Record End",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

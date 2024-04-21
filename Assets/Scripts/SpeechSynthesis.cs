@@ -7,7 +7,11 @@ public class SpeechSynthesis : MonoBehaviour
     [SerializeField] RespondGeneration respondGeneration;
     [SerializeField] AudioSource audioSource;
     [SerializeField] string voice;
+    [SerializeField] CharacterController characterController;
+    [SerializeField] UIController uiController;
+
     private LMNT.LMNTSpeech speech;
+    private int state = 0;
     
     // Start is called before the first frame update
     void Start()
@@ -22,17 +26,15 @@ public class SpeechSynthesis : MonoBehaviour
         {
             if (respondGeneration.outputSentences == "waiting")
             {
-                audioSource.Stop();
-                audioSource.clip = null;
-                Destroy(speech);
+                state = 0;
+
+                Reset();
             } else
             {
-                if (speech)
-                {
-                    audioSource.Stop();
-                    audioSource.clip = null;
-                    Destroy(speech);
-                }
+                state = 1;
+                
+                if (speech) Reset();
+
                 speech = gameObject.AddComponent<LMNT.LMNTSpeech>();
                 speech.voice = voice;
                 speech.dialogue = respondGeneration.outputSentences;
@@ -40,5 +42,25 @@ public class SpeechSynthesis : MonoBehaviour
                 StartCoroutine(speech.Talk());
             }
         }
+
+        if (state == 1 && audioSource.isPlaying)
+        {
+            state = 2;
+            characterController.Notify("state", "speak");
+            uiController.Notify("thinking", false);
+        }
+
+        if (state == 2 && !audioSource.isPlaying)
+        {
+            state = 0;
+            characterController.Notify("state", "idle");
+        }
+    }
+
+    public void Reset()
+    {
+        audioSource.Stop();
+        audioSource.clip = null;
+        Destroy(speech);
     }
 }

@@ -5,6 +5,8 @@ using UnityEngine;
 public class SpeechRecognition : MonoBehaviour
 {
     [SerializeField] RespondGeneration respondGeneration;
+    [SerializeField] CharacterController characterController;
+    [SerializeField] UIController uiController;
 
     private AudioClip clip;
     private byte[] bytes;
@@ -33,14 +35,18 @@ public class SpeechRecognition : MonoBehaviour
     {
         var position = Microphone.GetPosition(null);
         Microphone.End(null);
-        //GetComponent<AudioSource>().clip = clip;
-        //GetComponent<AudioSource>().Play();
+        Debug.Log(position);
 
-        var samples = new float[position * clip.channels];
-        clip.GetData(samples, 0);
-        bytes = EncodeAsWAV(samples, clip.frequency, clip.channels);
-        recording = false;
-        SendRecording();
+        if (position > 44100 * 1)
+        {
+            var samples = new float[position * clip.channels];
+            clip.GetData(samples, 0);
+            bytes = EncodeAsWAV(samples, clip.frequency, clip.channels);
+            recording = false;
+            uiController.Notify("thinking", true);
+            characterController.Notify("state", "think");
+            SendRecording();
+        }
     }
 
     private void SendRecording()
@@ -50,6 +56,9 @@ public class SpeechRecognition : MonoBehaviour
             Debug.Log("Recognition: " + response);
         }, error => {
             Debug.LogError(error);
+            characterController.Notify("state", "idle");
+            uiController.Notify("thinking", false);
+            uiController.Notify("error1", true);
         });
     }
 
